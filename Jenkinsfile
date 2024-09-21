@@ -50,5 +50,26 @@ pipeline {
     }
 }
 }
+stage('Deploy the application to Kubernetes') {
+    steps {
+        sh 'sudo chmod 600 ./terraform-files/virginia.pem'
+
+        // Copy deployment and service files to the Kubernetes node
+        sh 'sudo scp -o StrictHostKeyChecking=no ./terraform-files/virginia.pem kube.yml ubuntu@54.211.214.118:/home/ubuntu/'
+        sh 'sudo scp -o StrictHostKeyChecking=no ./terraform-files/virginia.pem service.yml ubuntu@54.211.214.118:/home/ubuntu/'
+
+        script {
+            try {
+                // Apply the Kubernetes configuration
+                sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.211.214.118 kubectl apply -f /home/ubuntu/kube.yml'
+                sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.211.214.118 kubectl apply -f /home/ubuntu/service.yml'
+            } catch (error) {
+                // Retry if there is an error
+                sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.211.214.118 kubectl apply -f /home/ubuntu/kube.yml'
+                sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.211.214.118 kubectl apply -f /home/ubuntu/service.yml'
+            }
+        }
+    }
+}
     }
 }
