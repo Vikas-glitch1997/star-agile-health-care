@@ -3,10 +3,10 @@ provider "aws" {
 }
 
 resource "aws_instance" "kubernetes_server" {
-  ami           = "ami-0e86e20dae9224db8"
-  instance_type = "t2.medium"
+  ami                    = "ami-0e86e20dae9224db8"
+  instance_type         = "t2.medium"
   vpc_security_group_ids = ["sg-042e7c08102a1660a"]
-  key_name = "virginia"
+  key_name              = "virginia"
 
   root_block_device {
     volume_size = 20
@@ -29,7 +29,8 @@ resource "aws_instance" "kubernetes_server" {
       "sudo chmod +x kubectl",
       "sudo cp kubectl /usr/local/bin/kubectl",
       "sudo groupadd docker",
-      "sudo usermod -aG docker ubuntu"
+      "sudo usermod -aG docker ubuntu",
+      "echo 'wait to start the instance'"
     ]
   }
 
@@ -39,16 +40,12 @@ resource "aws_instance" "kubernetes_server" {
     user        = "ubuntu"
     private_key = file("./virginia.pem")
   }
-  provisioner "remote-exec" {
-     inline = ["echo 'wait to start the instance' "]
+
+  provisioner "local-exec" {
+    command = "echo ${self.public_ip} > inventory"
   }
-  tags = {
-     Name = "kubernetes-server"
-     }
+
   provisioner "local-exec" {
-     command = "echo ${aws_instance.kubernetes-server.public_ip} > inventory"
-     }
-  provisioner "local-exec" {
-     command = "ansible-playbook /var/lib/jenkins/workspace/Medicure_healthcare_Project/terraform-files/ansibleplaybook.yml"
-     }
+    command = "ansible-playbook /var/lib/jenkins/workspace/Medicure_healthcare_Project/terraform-files/ansibleplaybook.yml"
+  }
 }
