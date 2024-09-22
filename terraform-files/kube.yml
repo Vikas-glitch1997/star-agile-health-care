@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: medicure-deployment
+  name: kube-deployment
   labels:
     app: front-end
 spec:
@@ -15,7 +15,7 @@ spec:
         app: front-end
     spec:
       containers:
-      - name: medicure
+      - name: kube
         image: vikaskumargt/medicurehealthcaredomain:1.0
         ports:
         - containerPort: 8082
