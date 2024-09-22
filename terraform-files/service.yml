@@ -8,5 +8,6 @@ spec:
     app: front-end
   ports:
     - protocol: TCP
-      port: 8082        # Port exposed by the service
-      targetPort: 8082
+      port: 8082         # Port exposed by the service
+      targetPort: 8082   # Port on the container
+      nodePort: 30000
