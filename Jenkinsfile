@@ -66,18 +66,18 @@ pipeline {
                 sh 'sudo chmod 600 ./terraform-files/virginia.pem'
 
                 // Copy deployment and service files to the Kubernetes node
-                sh 'sudo scp -o StrictHostKeyChecking=no ./terraform-files/virginia.pem kube.yml ubuntu@172.31.30.101:/home/ubuntu/'
-                sh 'sudo scp -o StrictHostKeyChecking=no ./terraform-files/virginia.pem service.yml ubuntu@172.31.30.101:/home/ubuntu/'
+                sh 'sudo scp -o StrictHostKeyChecking=no ./terraform-files/virginia.pem kube.yml ubuntu@100.24.24.3:/home/ubuntu/'
+                sh 'sudo scp -o StrictHostKeyChecking=no ./terraform-files/virginia.pem service.yml ubuntu@100.24.24.3:/home/ubuntu/'
 
                 script {
                     try {
                         // Apply the Kubernetes configuration
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@172.31.30.101 kubectl apply -f /home/ubuntu/kube.yml'
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@172.31.30.101 kubectl apply -f /home/ubuntu/service.yml'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/kube.yml'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/service.yml'
                     } catch (error) {
                         // Retry if there is an error
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@172.31.30.101 kubectl apply -f /home/ubuntu/kube.yml'
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@172.31.30.101 kubectl apply -f /home/ubuntu/service.yml'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/kube.yml'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/service.yml'
                     }
                 }
             }
