@@ -50,6 +50,7 @@ pipeline {
 
         stage('Setting up Kubernetes with Terraform') {
             steps {
+                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AwsAccessKey', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')])
                 dir('terraform-files') {
                   sh 'terraform init'
                   sh 'terraform validate'
