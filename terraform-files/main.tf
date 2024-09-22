@@ -25,13 +25,16 @@ resource "aws_instance" "kubernetes_server" {
       "sudo systemctl start docker",
       "sudo chmod +x minikube-linux-amd64",
       "sudo cp minikube-linux-amd64 /usr/local/bin/minikube",
-      "curl -LO https://storage.googleapis.com/kubernetes-release/release/stable.txt",
+      
+      # Download kubectl binary
+      "curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl",
       "sudo chmod +x kubectl",
       "sudo cp kubectl /usr/local/bin/kubectl",
-      "sudo groupadd docker",
+      
+      "sudo groupadd docker || true",  # Group might already exist
       "sudo usermod -aG docker ubuntu"
     ]
-  }
+}
 
   connection {
     type        = "ssh"
