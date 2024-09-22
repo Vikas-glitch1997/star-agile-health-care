@@ -48,38 +48,36 @@ pipeline {
             }
         }
 
-        stage('Setting up Kubernetes with Terraform') {
+        stage('Setting Up Kubernetes with Terraform') {
             steps {
                 withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AwsAccessKey', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     dir('terraform-files') {
+                        sh 'sudo chmod 600 virginia.pem'
                         sh 'terraform init'
                         sh 'terraform validate'
                         sh 'terraform apply --auto-approve'
-                        sh 'sleep 20'
                     }
                 }
             }
         }
 
-        stage('Deploy the application to Kubernetes') {
+        stage('Deploy the Application to Kubernetes') {
             steps {
-                dir('terraform-files') {
-                    sh 'sudo chmod 600 virginia.pem'
+                sh 'sudo chmod 600 ./terraform-files/virginia.pem'
 
-                    // Copy deployment and service files to the Kubernetes node
-                    sh 'sudo scp -o StrictHostKeyChecking=no virginia.pem kube.yml ubuntu@100.24.24.3:/home/ubuntu/'
-                    sh 'sudo scp -o StrictHostKeyChecking=no virginia.pem service.yml ubuntu@100.24.24.3:/home/ubuntu/'
+                // Copy deployment and service files to the Kubernetes node
+                sh 'scp -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ./terraform-files/kube.yml ubuntu@100.24.24.3:/home/ubuntu/'
+                sh 'scp -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ./terraform-files/service.yml ubuntu@100.24.24.3:/home/ubuntu/'
 
-                    script {
-                        try {
-                            // Apply the Kubernetes configuration
-                            sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/kube.yml'
-                            sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/service.yml'
-                        } catch (error) {
-                            // Retry if there is an error
-                            sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/kube.yml'
-                            sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@100.24.24.3 kubectl apply -f /home/ubuntu/service.yml'
-                        }
+                script {
+                    try {
+                        // Apply the Kubernetes configuration
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 "kubectl apply -f /home/ubuntu/kube.yml"'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 "kubectl apply -f /home/ubuntu/service.yml"'
+                    } catch (error) {
+                        // Retry if there is an error
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 "kubectl apply -f /home/ubuntu/kube.yml"'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@100.24.24.3 "kubectl apply -f /home/ubuntu/service.yml"'
                     }
                 }
             }
