@@ -32,7 +32,7 @@ resource "aws_instance" "kubernetes_server" {
       "sudo cp kubectl /usr/local/bin/kubectl",
       
       "sudo groupadd docker || true",  # Group might already exist
-      "sudo usermod -aG docker ubuntu"
+      "sudo usermod -aG docker ubuntu",
       "minikube start"
     ]
 }
