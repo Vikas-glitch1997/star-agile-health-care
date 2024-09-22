@@ -63,7 +63,7 @@ pipeline {
 
         stage('Deploy the application to Kubernetes') {
             steps {
-                sh 'sudo chmod 600 ./terraform-files/virginia.pem'
+                sh 'sudo chmod 777 ./terraform-files/virginia.pem'
 
                 // Copy deployment and service files to the Kubernetes node
                 sh 'sudo scp -o StrictHostKeyChecking=no ./terraform-files/virginia.pem kube.yml ubuntu@100.24.24.3:/home/ubuntu/'
