@@ -50,7 +50,7 @@ pipeline {
 
         stage('Setting up Kubernetes with Terraform') {
             steps {
-                dir('terraform files') {
+                dir('terraform-files') {
                   sh 'terraform init'
                   sh 'terraform validate'
                   sh 'terraform apply --auto-approve'
