@@ -37,6 +37,6 @@ resource "aws_instance" "kubernetes_server" {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
-    private_key = file("./project.pem")
+    private_key = file("./virginia.pem")
   }
 }
