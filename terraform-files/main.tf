@@ -33,7 +33,7 @@ resource "aws_instance" "kubernetes_server" {
       
       "sudo groupadd docker || true",  # Group might already exist
       "sudo usermod -aG docker ubuntu",
-      "minikube start"
+      "sudo minikube start"
     ]
 }
 
