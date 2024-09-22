@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: medicure-service
 spec:
+  type: NodePort
   selector:
-    app: front-end  # This should match the deployment's label
+    app: front-end
   ports:
     - protocol: TCP
-      port: 8082       # The port exposed by the service
-      targetPort: 8082 # The containerPort in the deployment
-      nodePort: 31480  # NodePort to expose externally
-  type: NodePort
+      port: 8082        # Port exposed by the service
+      targetPort: 8082
