@@ -48,50 +48,15 @@ pipeline {
             }
         }
 
-        stage('Setting Up Kubernetes with Terraform') {
+        stage('Setting up Kubernetes with Terraform') {
             steps {
-                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AwsAccessKey', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    dir('terraform-files') {
-                        sh 'sudo chmod 600 virginia.pem'
-                        sh 'terraform init'
-                        sh 'terraform validate'
-                        sh 'terraform apply --auto-approve'
-                    }
-                }
-            }
+                dir('terraform files') {
+                  sh 'terraform init'
+                  sh 'terraform validate'
+                  sh 'terraform apply --auto-approve'
+                  sh 'sleep 20'
         }
-
-        stage('Deploy the Application to Kubernetes') {
-            steps {
-                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AwsAccessKey', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    dir('terraform-files') {
-                        sh 'sudo chmod 600 virginia.pem'
-
-                        // Copy deployment and service files to the Kubernetes node
-                        sh 'scp -o StrictHostKeyChecking=no -i virginia.pem kube.yml ubuntu@54.211.214.118:/home/ubuntu/'
-                        sh 'scp -o StrictHostKeyChecking=no -i virginia.pem service.yml ubuntu@54.211.214.118:/home/ubuntu/'
-
-                        script {
-                            // Check if kubectl is available
-                            def kubectlCheck = sh(script: 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@54.211.214.118 "which kubectl"', returnStatus: true)
-                            if (kubectlCheck != 0) {
-                                error("kubectl is not installed on the Kubernetes node.")
-                            }
-
-                            try {
-                                // Apply the Kubernetes configuration
-                                sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@54.211.214.118 "kubectl apply -f /home/ubuntu/kube.yml"'
-                                sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@54.211.214.118 "kubectl apply -f /home/ubuntu/service.yml"'
-                            } catch (error) {
-                                echo "Error applying Kubernetes manifests: ${error.message}"
-                                // Retry logic if necessary
-                                sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@54.211.214.118 "kubectl apply -f /home/ubuntu/kube.yml"'
-                                sh 'ssh -o StrictHostKeyChecking=no -i virginia.pem ubuntu@54.211.214.118 "kubectl apply -f /home/ubuntu/service.yml"'
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    }
+}
     }
 }
