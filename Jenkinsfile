@@ -65,18 +65,18 @@ pipeline {
                 sh 'sudo chmod 600 ./terraform-files/virginia.pem'
 
                 // Copy deployment and service files to the Kubernetes node
-                sh 'scp -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ./terraform-files/kube.yml ubuntu@54.144.226.71:/home/ubuntu/'
-                sh 'scp -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ./terraform-files/service.yml ubuntu@54.144.226.71:/home/ubuntu/'
+                sh 'scp -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ./terraform-files/kube.yml ubuntu@54.81.95.16:/home/ubuntu/'
+                sh 'scp -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ./terraform-files/service.yml ubuntu@54.81.95.16:/home/ubuntu/'
 
                 script {
                     try {
                         // Apply the Kubernetes configuration
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.144.226.71 "kubectl apply -f /home/ubuntu/kube.yml"'
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.144.226.71 "kubectl apply -f /home/ubuntu/service.yml"'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.81.95.16 "kubectl apply -f /home/ubuntu/kube.yml"'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.81.95.16 "kubectl apply -f /home/ubuntu/service.yml"'
                     } catch (error) {
                         // Retry if there is an error
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.144.226.71 "kubectl apply -f /home/ubuntu/kube.yml"'
-                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.144.226.71 "kubectl apply -f /home/ubuntu/service.yml"'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.81.95.16 "kubectl apply -f /home/ubuntu/kube.yml"'
+                        sh 'ssh -o StrictHostKeyChecking=no -i ./terraform-files/virginia.pem ubuntu@54.81.95.16 "kubectl apply -f /home/ubuntu/service.yml"'
                     }
                 }
             }
